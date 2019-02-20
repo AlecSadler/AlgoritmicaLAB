@@ -11,16 +11,6 @@ int strLen (char *s){
   return len;
 }
 
-// stampa una stringa inserita
-
-void printStr (char *s){
-  int i=0;
-  while (*(s+i) != 0 && i<MAX_STRLEN){
-    printf("%c",*(s+i));
-    i++;}
-  printf("\n");
-}
-
 int member (char *s, char ch){
   int i=0;
   int found=0;
