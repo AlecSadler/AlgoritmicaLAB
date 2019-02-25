@@ -28,6 +28,6 @@ int main(){
   char *s2=string2;
   scanf("%s",string1);
   scanf("%s",string2);
-  printf("%s\n",myStrCat(string1,string2));
+  printf("%s\n",myStrCat1(string1,string2));
   return 0;
 }
