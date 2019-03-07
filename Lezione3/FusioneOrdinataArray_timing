@@ -1,0 +1,18 @@
+Last login: Thu Mar  7 18:22:39 on ttys000
+MacBook-Pro-di-Salvo:~ salvofirera$ cd Desktop/test_set
+MacBook-Pro-di-Salvo:test_set salvofirera$ time ./a.out < input0.txt
+
+real	0m0.008s
+user	0m0.002s
+sys	0m0.004s
+MacBook-Pro-di-Salvo:test_set salvofirera$ time ./a.out < input1.txt
+
+real	0m0.008s
+user	0m0.003s
+sys	0m0.004s
+MacBook-Pro-di-Salvo:test_set salvofirera$ time ./a.out < input2.txt
+
+real	0m0.017s
+user	0m0.006s
+sys	0m0.007s
+MacBook-Pro-di-Salvo:test_set salvofirera$ 
