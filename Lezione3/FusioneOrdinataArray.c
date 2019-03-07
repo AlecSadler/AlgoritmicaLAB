@@ -15,16 +15,16 @@ int* union_ord (int a[],int dim_a,int b[],int dim_b){
       *(u+k)=a[i];
       i++;
       k++;}}
-    if (i<dim_a){
-      while (i<dim_a){
+  if (i<dim_a){
+     while (i<dim_a){
         *(u+k)=a[i];
         i++;
         k++;}}
-    else if (j<dim_b){
-        while (j<dim_b){
-          *(u+k)=b[j];
-          j++;
-          k++;}}
+  else if (j<dim_b){
+     while (j<dim_b){
+        *(u+k)=b[j];
+        j++;
+        k++;}}
   return u;
 }
 
