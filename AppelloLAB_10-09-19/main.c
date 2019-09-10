@@ -60,6 +60,20 @@ void hash_aggiorna (node **tab,int n,int mat,int *conta){
         cur=cur->next;}}
 }
 
+/* VERSIONE RICORSIVA:
+void hash_aggiorna (node *tab,int mat,int *conta){
+  if (tab==NULL)return;
+  if (tab->mat==mat && tab->fail==1){
+    *conta=*conta-1;
+    node *tmp=tab;
+    tab=tab->next;
+    free(tmp);
+    return;}
+  if (tab->mat==mat && tab->fail==0){
+     tab->fail++;
+      return;}
+  hash_aggiorna(tab->next,mat,conta);
+}  */
 
 int main(){
   int n,i,m1,m2,mat,conta;
