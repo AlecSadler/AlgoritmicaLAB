@@ -1,65 +1,86 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
 
-struct btree{
-  int key;
-  struct btree* left;
-  struct btree* right;};
+typedef struct ris {
+	int sx;
+	int dx;
+}ris;
 
-typedef struct btree btree;
+typedef struct lista {
+	int info;
+	struct lista *next;
+} lista;
 
-void insert (btree** t,int el){
-  btree *new=malloc(sizeof(btree));
-  new->left=NULL;
-  new->right=NULL;
-  new->key=el;
-  if (*t==NULL){
-    *t=new;}
-  else{
-    btree *cur=*t;
-    btree *par;
-    while (cur!=NULL){
-      par=cur;
-      if (cur->key < el)
-        cur=cur->right;
-      else
-        cur=cur->left;}
-    if (par->key < el)
-      par->right=new;
-    else
-      par->left=new;}
+
+
+typedef struct nodo {
+	int info;
+	int ok;
+	struct nodo *right;
+	struct nodo *left;
+} nodo ;
+
+void stampalista(lista *list){
+	if(list!=NULL){
+		printf("%d\n",list->info);
+		stampalista(list->next);
+	}
 }
 
-int conta_nodiL (btree* t){
-  if (t==NULL)
-    return 0;
-  return 1+conta_nodiL(t->left);
+void visita_simm(nodo *radice){
+	if(radice!=NULL){
+		visita_simm(radice->left);
+		if(radice->ok ==1) printf("%d\n",radice->info);
+		visita_simm(radice->right);
+	}
 }
 
-int conta_nodiR (btree* t){
-  if (t==NULL)
-    return 0;
-  return 1+conta_nodiR(t->right);
+
+nodo *inserisci (nodo **radice, int valore ) {
+	nodo *new=malloc(sizeof(nodo));
+	new->info = valore;
+	new->ok=0;
+	new->left=NULL;
+	new->right=NULL;
+	if(*radice==NULL) return new;
+	if(valore <= (*radice)->info) (*radice)->left=inserisci (&((*radice)->left),valore);
+	else (*radice)->right=inserisci(&((*radice)->right),valore);
+	return *radice;
 }
 
-void checkLR (btree *t){
-  if (t==NULL) return;
-  if (conta_nodiL(t->left) > conta_nodiR(t->right)){
-    checkLR(t->left);
-    printf("%d\n",t->key);
-    checkLR(t->right);}
-  else{
-    checkLR(t->left);
-    checkLR(t->right);}
+ris * stampanodi ( nodo *albero ) {
+	if(albero==NULL) {
+		ris *risultato=malloc(sizeof(ris));
+		risultato->sx=0;
+		risultato->dx=0;
+		return risultato;
+	}
+	else {
+		ris *left=stampanodi(albero->left);
+		ris *right=stampanodi(albero->right);
+		ris *risultato=malloc(sizeof(ris));
+		if(left->sx > right->dx) {
+			albero->ok=1;
+		}
+		risultato->sx=left->sx+1;
+		risultato->dx=right->dx+1;
+		return risultato;
+	}
 }
 
-int main(){
-  int el,n,i;
-  btree *t=NULL;
-  scanf("%d",&n);
-  for (i=0;i<n;i++){
-    scanf("%d",&el);
-    insert(&t,el);}
-  checkLR(t);
-  return 0;
+
+int main() {
+	nodo *albero=NULL;
+	int numel;
+	scanf("%d",&numel);
+	for(int i=0;i<numel;i++) {
+		int valore;
+		scanf("%d",&valore);
+		albero=inserisci(&albero,valore);
+	}
+	stampanodi(albero);
+	visita_simm(albero);
+	return 0;
 }
+
