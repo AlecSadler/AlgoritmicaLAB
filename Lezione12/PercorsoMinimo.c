@@ -1,33 +1,31 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct edges {
-  int grado;
-  int *adiacenti;};
+struct grafo{
+  int grado;  //grado nodo
+  int *adj;}; // nodi raggiungibili
+typedef struct grafo grafo;
 
 struct queue {
   int capacity;
   int head;
   int tail;
   int *valori;};
-
-typedef struct edges edges;
 typedef struct queue queue;
 
 //costruzione grafo
-edges* readGraph (int n){
+grafo* readGraph (int n){
   int i,g,j;
-  edges* E=malloc(n*sizeof(edges));
+  grafo* E=malloc(n*sizeof(grafo));
   for (i=0;i<n;i++){
     scanf("%d",&g);
     E[i].grado=g;
-    E[i].adiacenti=malloc(E[i].grado*sizeof(int));
+    E[i].adj=malloc(E[i].grado*sizeof(int));
     for (j=0;j<g;j++){
-      scanf("%d",E[i].adiacenti+j);}}
+      scanf("%d",E[i].adj+j);}}
   return E;
 }
 
-// inizializza la coda
 void init(queue *q, int n){
     q->capacity=n;
     q->head=0;
@@ -50,7 +48,6 @@ void deinit(queue* q){
     q->tail=0;
 }
 
-// controlla se una coda è vuota
 int codavuota(queue* q){
     if(q->head==q->tail)
         return 1;
@@ -58,39 +55,44 @@ int codavuota(queue* q){
         return 0;
 }
 
-int bfs (edges *E,int start,int end,int n){
+int bfs (grafo* g,int start,int end,int n){
   int *colori=malloc(n*sizeof(int));
-  int *distance=malloc(n*sizeof(int));
+  int *distanza=malloc(n*sizeof(int));
   int i,u,v;
   queue q;
+
   for (i=0;i<n;i++){
     colori[i]=0;
-    distance[i]=-1;}
+    distanza[i]=-1;
+  }
   init(&q,n);
   accoda(&q,start);
   colori[start]=1;
-  distance[start]=0;
-  while (!codavuota(&q)){
+  distanza[start]=0;
+  // estraggo dalla coda
+  while (!codavuota(&q)) {  // finche ho elementi in coda
     u=decoda(&q);
-    for (i=0;i<E[u].grado;i++){
-      v=E[u].adiacenti[i];
+    for (i=0;i<g[u].grado;i++){ //esamino la lista id adiacenza del nodo
+      v= g[u].adj[i];
       if (colori[v]==0){
-        distance[v]=distance[u]+1;
-        if (v==end)
-          return distance[v];
         colori[v]=1;
-        accoda(&q,v);}}};
+        distanza[v]=distanza[u]+1;
+        if (v==end) return distanza[v]; // se è il nodo finale posso terminare
+        accoda(&q,v);                   // metto il nodo in coda
+      }
+    }
+  }
   deinit(&q);
-  return distance[end];
+  return distanza[end];
 }
 
-int main(){
-  int n,query,i,start,end;
+void main(){
+  int n, i, start, end, nQuerys;
   scanf("%d",&n);
-  edges *E=readGraph(n);
-  scanf("%d",&query);
-  for (i=0;i<query;i++){
-    scanf("%d %d",&start,&end);
-    printf("%d\n",bfs(E,start,end,n));}
-  return 0;
+  grafo *graph= readGraph(n);
+  scanf("%d",&nQuerys);
+  for(i=0;i<nQuerys;i++){
+    scanf("%d%d",&start,&end);
+    printf("%d\n",bfs(graph,start,end,n));
+  }
 }
