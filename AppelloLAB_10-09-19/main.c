@@ -22,10 +22,12 @@ void push_head (node **head,int mat){
   new->fail=0;
   if (*head==NULL){
     *head=new;
-    (*head)->next=NULL;}
+    (*head)->next=NULL;
+  }
   else{
     new->next=*head;
-    *head=new;}
+    *head=new;
+  }
 }
 
 void hash_insert (node **tab,int n,int mat){
@@ -48,16 +50,22 @@ void hash_aggiorna (node **tab,int n,int mat,int *conta){
           tab[hx]=tab[hx]->next;
           cur=tab[hx];
           free(tmp);
-          return;}
+          return;
+        }
         else{
           node *tmp=cur;
           prev->next=cur->next;
           free(tmp);
-          return;}}
-      return;}
+          return;
+        }
+      }
+      return;
+    }
     else{
         prev=cur;
-        cur=cur->next;}}
+        cur=cur->next;
+    }
+  }
 }
 
 /* VERSIONE RICORSIVA:
@@ -68,10 +76,12 @@ void hash_aggiorna (node *tab,int mat,int *conta){
     node *tmp=tab;
     tab=tab->next;
     free(tmp);
-    return;}
+    return;
+  }
   if (tab->mat==mat && tab->fail==0){
      tab->fail++;
-      return;}
+      return;
+  }
   hash_aggiorna(tab->next,mat,conta);
 }  */
 
@@ -81,18 +91,22 @@ int main(){
   conta=n;
   node **tab=malloc(2*n*sizeof(node));
   for (i=0;i<2*n;i++){
-    tab[i]=NULL;}
+    tab[i]=NULL;
+  }
   for (i=0;i<n;i++){
     scanf("%d",&mat);
-    hash_insert(tab,n,mat);}
+    hash_insert(tab,n,mat);
+  }
   scanf("%d",&m1);
   for (i=0;i<m1;i++){
     scanf("%d",&mat);
-    hash_aggiorna(tab,n,mat,&conta);}
+    hash_aggiorna(tab,n,mat,&conta);
+  }
   scanf("%d",&m2);
   for (i=0;i<m2;i++){
     scanf("%d",&mat);
-    hash_aggiorna(tab,n,mat,&conta);}
+    hash_aggiorna(tab,n,mat,&conta);
+  }
   printf("%d\n",conta);
   return 0;
 }
