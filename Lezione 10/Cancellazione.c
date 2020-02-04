@@ -1,68 +1,64 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define HASH_CONST 999149
+
 struct node{
   int key;
   struct node* next;};
-
 typedef struct node node;
 
-void push_tail(node **head,int el){
+int fHash (int n, int x, int a, int b){
+  return ((a*x + b) % HASH_CONST) % (2*n);
+}
+
+void insert (node **tab, int n, int a, int b, int x, int *conf, int *maxlen, int *unique){
+  int position= fHash(n,x,a,b);
+  int len=0;
+  if (tab[position]==NULL){
+    node *new= malloc(sizeof(node));
+    new->key=x;
+    tab[position]=new;
+    tab[position]->next=NULL;
+    *unique= *unique + 1;
+    len++;
+    if (len > *maxlen) *maxlen=len;
+    return;
+  }
+  *conf=*conf + 1;
+  len++;
   node *new=malloc(sizeof(node));
-  new->key=el;
+  new->key=x;
   new->next=NULL;
-  if (*head==NULL){
-    *head=new;}
-  else{
-    node *cur=*head;
-    while (cur->next!=NULL){
-      cur=cur->next;}
-    cur->next=new;}
+  node *cur=tab[position];
+  while (cur->next!=NULL && x!=cur->key) {
+    len++;
+    cur=cur->next;
+  }
+  len++;
+  if (cur->key==x){                // controllo se mi sono fermato perchè arrivato alla fine
+    *conf = *conf - 1;             //   oppure perchè sono incappato in un doppione 
+    return;
+  }
+  if (len > *maxlen) *maxlen=len;
+  cur->next=new;
+  *unique= *unique + 1;
 }
 
-int average (node *head){
-  int sum=0, count=0;
-  if (head!=NULL){
-    node *cur=head;
-    while (cur!=NULL){
-      sum=sum+cur->key;
-      count++;
-      cur=cur->next;}
-    return (int)sum/count;}
-  else{
-    return 0;}
-}
-
-void del_avg (node **head,int avg){
-  if (*head!=NULL){
-    if ((*head)->key<=avg){
-      node *tmp=*head;
-      *head=(*head)->next;
-      free(tmp);
-      del_avg(&(*head),avg);}
-    else
-      del_avg(&(*head)->next,avg);}
-  else return;
-}
-
-void printList (node *head){
-  while (head!=NULL){
-    printf("%d ",head->key);
-    head=head->next;}
-  printf("\n");
-}
-
-int main(){
-  int n,i,el,avg;
-  node *list=NULL;
+void main(){
+  int n, i, a, b, x, conflicts, maxLength, uniques;
   scanf("%d",&n);
+  node **tab=malloc((2*n)*sizeof(node));
+  for (i=0;i<(2*n);i++){
+    tab[i]=NULL;
+  }
+  conflicts=0;
+  maxLength=0;
+  uniques=0;
+  scanf("%d%d",&a,&b);
   for (i=0;i<n;i++){
-    scanf("%d",&el);
-    push_tail(&list,el);}
-  avg=average(list);
-  printf("%d\n",avg);
-  printList(list);
-  del_avg(&list,avg);
-  printList(list);
-  return 0;
+    scanf("%d",&x);
+    insert(tab,n,a,b,x,&conflicts,&maxLength,&uniques);
+  }
+  printf("%d\n%d\n%d\n",conflicts,maxLength,uniques);
 }
