@@ -2,55 +2,70 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_STRLEN 101
+#define MAXLEN 101
 
-struct node{
-  char* str;
-  int freq;};
+struct str_occ{   // struct con stringa e occorenze
+  char *s;
+  int occ;};
+typedef struct str_occ str_occ;
 
-typedef struct node node;
-
-// confronta due stringhe in ordine lessicografico
-int str_compare (const void *a,const void *b){
-  char* st1=*(char**)a;
-  char* st2=*(char**)b;
+// compare per stringhe
+int strCompare (const void* a,const void* b){
+  char *st1 = *(char**)a;
+  char *st2 = *(char**)b;
   return strcmp(st1,st2);
 }
 
-// confronta due interi e li mette in ordine decrescente
-int struct_compare_freq(const void *a,const void *b){
-  node stfa=*(node*)a;
-  node stfb=*(node*)b;
-  return -(stfa.freq-stfb.freq);
+// compare per struct rispetto alle occorenze
+int occCompare (const void* a, const void* b){
+  str_occ s1 = *(str_occ*)a;
+  str_occ s2 = *(str_occ*)b;
+  return -(s1.occ - s2.occ);
 }
 
-// confronta due stringhe in ordine lessicografico
-int struct_compare_str(const void *a,const void *b){
-  node stsa=*(node*)a;
-  node stsb=*(node*)b;
-  return strcmp(stsa.str,stsb.str);
+// compare per struct rispetto alla stringa
+int nameCompare (const void* a, const void* b){
+  str_occ s1 = *(str_occ*)a;
+  str_occ s2 = *(str_occ*)b;
+  return strcmp(s1.s,s2.s);
 }
 
-int main(void){
-  int n,k,i,j;
+str_occ* contaOcc (char** arr,int n,int *unique){  // lavora su array ordinato
+  int i=1, count, j=0;
+  str_occ *stringhe_occorrenze = malloc(n*sizeof(str_occ));
+  while (i<n){
+    count=1;
+    while (i<n && !(strcmp(arr[i],arr[i-1]))){
+      count++;
+      i++;
+    }
+    str_occ coppia;
+    coppia.s= arr[i-1];
+    coppia.occ= count;
+    stringhe_occorrenze[j]=coppia;
+    j++;
+    i++;
+  }
+    *unique= j;   // ritorno la lunghezza effettiva dell'array di struct
+    return stringhe_occorrenze;
+
+}
+
+void main(){
+  int n, k, i, unique;
   scanf("%d%d",&n,&k);
-  char** words=malloc(n*sizeof(char*));
-  node *w_freq= malloc(n*sizeof(node));
+  str_occ* coppie;
+  char** stringhe= malloc(n*sizeof(char*));
   for (i=0;i<n;i++){
-    words[i]=malloc(MAX_STRLEN*sizeof(char));
-    scanf("%s",words[i]);}
-  qsort(words,n,sizeof(char*),str_compare);
-  j=-1;                                       // -1 perchè la prima deve essere sempre inserita
-  for(i=0;i<n;i++){
-    if(j>=0 && !strcmp(words[i],w_freq[j].str)){
-      w_freq[j].freq++;}
-    else{
-      j++;
-      w_freq[j].str=words[i];
-      w_freq[j].freq=1;}}
-  qsort(w_freq,j+1,sizeof(node),struct_compare_freq);  // j+1 perche sono partito da -1
-  qsort(w_freq,k,sizeof(node),struct_compare_str);
+    char* str= malloc(MAXLEN*sizeof(char));
+    scanf("%s",str);
+    stringhe[i]=str;
+  }
+  qsort(stringhe,n,sizeof(char*),strCompare); // ordino l'array di stringhe da passare alla funzione
+  coppie=contaOcc(stringhe,n,&unique);
+  qsort(coppie,unique,sizeof(str_occ),occCompare); //ordino per occorrenze decrescenti
+  qsort(coppie,k,sizeof(str_occ),nameCompare);  // prendo le prime k e le ordino lessicograficamente
   for (i=0;i<k;i++){
-    printf("%s\n",w_freq[i].str);}
-  return 0;
+    printf("%s\n",coppie[i].s);
+  }
 }
