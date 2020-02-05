@@ -7,13 +7,6 @@ typedef struct ris {
 	int dx;
 }ris;
 
-typedef struct lista {
-	int info;
-	struct lista *next;
-} lista;
-
-
-
 typedef struct nodo {
 	int info;
 	int ok;
