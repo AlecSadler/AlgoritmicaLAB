@@ -1,41 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct p{
+struct point{
   int x;
   int y;
   int c;};
+typedef struct point point;
 
-typedef struct p punto;
-
-int struct_compare (const void *a,const void *b){
-  punto pa= *(punto*)a;
-  punto pb= *(punto*)b;
-  return pa.c-pb.c;
+int colCompare (const void* a,const void* b){
+  point p1= *(point*)a;
+  point p2= *(point*)b;
+  return p1.c - p2.c;
 }
 
-int main(){
-  int m,n,i,j,x,y,c,x1,y1,x2,y2,last_col,count;
-  scanf("%d%d",&n,&m);
-  int *res=malloc(m*sizeof(int));  //uso un array per memorizzare i risultati delle interrogazioni
-  punto* punti=malloc(n*sizeof(punto));
+int query(point*arr,int n,point inq1,point inq2){
+  int i, last=-1, count=0;
   for (i=0;i<n;i++){
-    scanf("%d%d%d",&x,&y,&c);
-    punti[i].x=x;
-    punti[i].y=y;
-    punti[i].c=c;}
-  qsort(punti,n,sizeof(punto),struct_compare);
+    if (arr[i].x >= inq1.x && arr[i].y >= inq1.y && arr[i].x <= inq2.x && arr[i].y <= inq2.y){
+      if (arr[i].c != last){
+        count++;
+        last= arr[i].c;
+      }
+    }
+  }
+  return count;
+}
+
+void main(){
+  int i, n, m, asc, ord, col, qx1, qy1, qx2, qy2;
+  scanf("%d%d",&n,&m);
+  point* points= malloc(n*sizeof(int));
+  for (i=0;i<n;i++){
+    scanf("%d%d%d",&asc,&ord,&col);
+    points[i].x=asc;
+    points[i].y=ord;
+    points[i].c=col;
+  }
+  qsort(points,n,sizeof(point),colCompare);
   for (i=0;i<m;i++){
-    last_col=-1;
-    count=0;
-    scanf("%d%d%d%d",&x1,&y1,&x2,&y2);
-    for (j=0;j<n;j++){
-      if (punti[j].x>=x1 && punti[j].y>=y1 && punti[j].x<=x2 && punti[j].y<=y2){
-        if (punti[j].c != last_col){
-          count++;
-          last_col=punti[j].c;}}}
-    res[i]=count;}
-  for (i=0;i<m;i++){
-    printf("%d\n",res[i]);}
-  return 0;
+    scanf("%d%d%d%d",&qx1,&qy1,&qx2,&qy2);
+    point p1,p2;
+    p1.x=qx1;
+    p1.y=qy1;
+    p1.c=-1;
+    p2.x=qx2;
+    p2.y=qy2;
+    p1.c=-1;
+    printf("%d\n",query(points,n,p1,p2));
+  }
 }
