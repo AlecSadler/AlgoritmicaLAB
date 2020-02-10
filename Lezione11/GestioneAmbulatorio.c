@@ -2,74 +2,115 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXLEN 101
+#define MAXLEN 100
 
-struct paziente{
-  char* nome;
-  struct paziente* next;};
+struct node {
+    char* key;
+    struct node* next;
+};
 
-typedef struct paziente paziente;
+typedef struct node node;
 
-int str_compare (const void *a,const void *b){
-  char* st1= *(char**)a;
-  char* st2= *(char**)b;
-  return strcmp (st1,st2);
+struct list {
+    node* head;
+    node* tail;
+    int size;
+};
+
+typedef struct list list;
+
+int compare (const void* a, const void* b){
+  char* s1 = *(char**)a;
+  char* s2 = *(char**)b;
+  return strcmp(s1,s2);
 }
 
-void pushTail (paziente **head){
-  char *nome=malloc(MAXLEN*sizeof(char));
-  scanf("%s",nome);
-  paziente *new= malloc(sizeof(paziente));
+list* newList() {
+    list* lst = malloc(sizeof(list));
+    lst->head = NULL;
+    lst->tail = NULL;
+    lst->size = 0;
+    return lst;
+}
+
+void destroyList(list* lst) {
+    while(lst->head != NULL) {
+        node* tmp = lst->head; // Salva l'elemento corrente
+        lst->head = lst->head->next; // Avanza nella lista
+        free(tmp); // Dealloca l'elemento
+    }
+    free(lst); // Free della struct che conteneva la lista
+}
+
+void pushTail(list *lst,char* el){
+  node *new=malloc(sizeof(node));
   new->next=NULL;
-  new->nome=nome;
-  if (*head==NULL)
-    *head=new;
-  else{
-    paziente *cur=*head;
-    while (cur->next != NULL){
-      cur=cur->next;}
-    cur->next=new;}
+  new->key=el;
+  if (lst->size==0){
+    lst->head=new;
+    new->next=NULL;
+    lst->tail=lst->head;
+    lst->size++;
+    return;
+  }
+  lst->tail->next=new;
+  lst->tail=new;
+  lst->size++;
 }
 
-void delete_head (paziente **head){
-  if (*head!=NULL){
-    paziente *tmp=*head;
-    *head=(*head)->next;
-    free(tmp);}
-  else return;
+void dropHead(list *lst){
+  if (lst->size==1){
+    free(lst->head);
+    lst->head=NULL;
+    lst->tail=NULL;
+    lst->size--;
+    return;
+  }
+  if (lst->size>1){
+    node *tmp= lst->head;
+    lst->head=lst->head->next;
+    free(tmp);
+    lst->size--;
+  }
 }
 
-int lengthList(paziente *head){
-  if (head!=NULL)
-    return 1+ lengthList(head->next);
-  else return 0;
-}
-
-int main(){
-  int i,action,len,end=0;
-  paziente *list=NULL;
-  char **closing;
-  while (!end){
-    scanf("%d",&action);
-    if (action==1)
-      pushTail(&list);
-    else if (action==2)
-      delete_head(&list);
-    else if (action==0)
-      end++;}
-  //da qui in poi trasferisco la lista su un array per poterlo ordinare
-  len=lengthList(list);
-  closing=malloc(len*sizeof(char*));
-  i=0;
-  while (list!=NULL){
-    closing[i]=malloc(MAXLEN*sizeof(char));
-    closing[i]=list->nome;
-    list=list->next;
-    i++;}
-  free(list); //a questo punto la lista non mi serve più
-  qsort(closing,len,sizeof(char*),str_compare);
-  for (i=0;i<len;i++){
-    printf("%s\n",closing[i]);}
+void main(){
+  int closed=0, op;
+  list *ambulatorio=newList();
+  while (!closed){
+    scanf("%d",&op);
+    if (op==1){
+      char *new= malloc(MAXLEN*sizeof(char));
+      scanf("%s",new);
+      pushTail(ambulatorio,new);
+    }
+    else if (op==2)
+      dropHead(ambulatorio);
+    else if (op==0)
+      closed++;
+  }
+  if (ambulatorio->head!=NULL){
+    int i=0;
+    int len=ambulatorio->size;
+    char** arr= malloc(len*sizeof(char*));
+    node *cur= ambulatorio->head;
+    while (cur!=NULL){
+      char* el= malloc(MAXLEN*sizeof(char));
+      el= cur->key;
+      arr[i]=el;
+      i++;
+      cur=cur->next;
+    }
+    free(cur);
+    destroyList(ambulatorio);  // ora la lista non serve più, l'ho trasferita su array
+    qsort(arr,len,sizeof(char*),compare);
+    for (i=0;i<len;i++){
+      printf("%s\n",arr[i]);
+    }
+    for (i=0;i<len;i++){    // libero l'array
+      free(arr[i]);
+    }
+    free(arr);
+  }
   printf("$\n");
-  return 0;
 }
