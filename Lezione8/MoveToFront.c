@@ -1,85 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node{
+struct node{
   int key;
-  struct Node *next;};
+  struct node* next;};
+typedef struct node node;
 
-typedef struct Node Node;
+struct list {
+    node* head;
+    node* tail;
+    int size;
+};
 
-void push_tail(Node **head,int el){
-  Node *new=malloc(sizeof(Node));
+typedef struct list list;
+
+list* newList() {
+    list* lst = malloc(sizeof(list));
+    lst->head = NULL;
+    lst->tail = NULL;
+    lst->size = 0;
+    return lst;
+}
+
+void destroyList(list* lst) {
+    while(lst->head != NULL) {
+        node* tmp = lst->head; // Salva l'elemento corrente
+        lst->head = lst->head->next; // Avanza nella lista
+        free(tmp); // Dealloca l'elemento
+    }
+    free(lst); // Free della struct che conteneva la lista
+}
+
+void pushHead (list *lst,int el){
+  node *new= malloc(sizeof(node));
   new->key=el;
+  if (lst->size==0) {
+    lst->head=new;
+    new->next=NULL;
+    lst->tail=lst->head;
+    lst->size++;
+    return;
+  }
+  new->next=lst->head;
+  lst->head=new;
+  lst->size++;
+}
+
+void pushTail(list *lst,int el){
+  node *new=malloc(sizeof(node));
   new->next=NULL;
-  if (*head==NULL){
-    *head=new;}
-  else{
-    Node *cur=*head;
-    while (cur->next!=NULL){
-      cur=cur->next;}
-    cur->next=new;}
+  new->key=el;
+  if (lst->size==0){
+    lst->head=new;
+    new->next=NULL;
+    lst->tail=lst->head;
+    lst->size++;
+    return;
+  }
+  lst->tail->next=new;
+  lst->tail=new;
+  lst->size++;
 }
 
-int member(Node *head,int el){
-  if (head!=NULL){
-    if (head->key==el)
-      return 1;
-    else
-      member(head->next,el);}
-  else
-    return 0;
-}
-
-// search the "i" value in the list,moves it to head and return its initial position
-int MoveToFront(Node **head,int i){
-  int pos=0;
-  if (*head!=NULL){
-    Node *cur=*head;
-    Node *prev=NULL;
-    Node *tmp;
-    while (cur!=NULL){
-      if (cur->key == i){
-        if (prev==NULL){
-          return pos;}
-        else{
-          tmp=cur;
-          prev->next=cur->next;
-          if (prev->next!=NULL)
-            cur=cur->next->next;
-          else
-            cur=NULL;
-          tmp->next=*head;
-          *head=tmp;
-          return pos;}}
-      else{
-       pos++;
-       prev=cur;
-       cur=cur->next;}}}
+int moveToFront(list *lst,int n){
+  node *cur= lst->head;
+  node *prev= NULL;
+  int count=0;
+  while (cur->next!=NULL) {
+    if (cur->key==n){
+      if (prev==NULL)
+        return 0;
+      int aux= cur->key;
+      prev->next=cur->next;
+      free(cur);
+      pushHead(lst,aux);
+      lst->size--;
+      return count;
+    }
+    count++;
+    prev=cur;
+    cur=cur->next;
+  }
+  if (cur->key==n){
+    int aux= cur->key;
+    lst->tail=prev;
+    pushHead(lst,aux);
+    free(cur);
+    return count++;
+  }
   return -1;
 }
 
-void printList(Node *head){
-  while (head!=NULL){
-    printf("%d\n",head->key);
-    head=head->next;}
-}
-
-int main(void){
+void main(){
+  int n, query, i, el;
+  list *lst=newList();
+  scanf("%d",&n);
+  for (i=0;i<n;i++){
+    scanf("%d",&el);
+    pushTail(lst,el);
+  }
   int end=0;
-  Node *list=NULL;
-  Node *positions=NULL;
-  int i,n,len;
-  scanf("%d",&len);
-  for (i=0;i<len;i++){
-    scanf("%d",&n);
-    push_tail(&list,n);}
-  while (end==0){
-    scanf("%d",&i);
-    if (!member(list,i)){
-      end=1;
-      push_tail(&positions,-1);}
+  while (!end){
+    scanf("%d",&query);
+    int tmp=moveToFront(lst,query);
+    if (tmp==-1){
+      printf("%d\n",tmp);
+      end++;
+    }
     else
-      push_tail(&positions,MoveToFront(&list,i));}
-  printList(positions);
-  return 0;
+      printf("%d\n",tmp);
+  }
 }
