@@ -65,7 +65,8 @@ int bfs (edges *E,int start,int n){
   queue q;
   for (i=0;i<n;i++){
     colori[i]=0;
-    distance[i]=-1;}
+    distance[i]=-1;
+  }
   init(&q,n);
   accoda(&q,start);
   colori[start]=1;
@@ -77,13 +78,17 @@ int bfs (edges *E,int start,int n){
       if (colori[v]==0){
         distance[v]=distance[u]+1;
         colori[v]=1;
-        accoda(&q,v);}}};
+        accoda(&q,v);
+      }
+    }
+  }
   deinit(&q);
   for (i=0;i<n;i++){
     if (!colori[i])
       return -1;
     if (distance[i]> max_d)
-      max_d=distance[i];}
+      max_d=distance[i];
+  }
   return max_d;
 }
 
@@ -95,7 +100,8 @@ int diametro(edges *E,int n){
     if (tmp == -1)
       return -1;
     if (tmp > diametro)
-      diametro=tmp;}
+      diametro=tmp;
+  }
   return diametro;
 }
 
