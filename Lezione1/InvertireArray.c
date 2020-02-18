@@ -10,12 +10,16 @@ int main(){
       while (i<dim){
         scanf("%d",&n);
         a[i]=n;
-        i++;}}
+        i++;
+      }
+    }
     for (i=0;i<dim/2;i++){
       tmp=a[i];
       a[i]=a[dim-i-1];
-      a[dim-i-1]=tmp;}
+      a[dim-i-1]=tmp;
+    }
     for (i=0;i<dim;i++){
-      printf("%d\n",a[i]);}
+      printf("%d\n",a[i]);
+    }
   return 0;
 }
